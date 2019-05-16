@@ -1,0 +1,38 @@
+--3 ) Consultas ao banco de dados
+--a) Listar todos os empregados
+ SELECT * FROM EMPREGADO
+
+--b) Listar distintamente os cargos da tabela empregado
+
+SELECT DISTINCT CARGO
+FROM EMPREGADO
+
+-- c) Listar todos os detalhes referentes a todas as matriculas
+
+SELECT * FROM EMPREGADO AS A 
+INNER JOIN DEPARTAMENTO AS B
+ON A.deptono=B.deptono
+
+
+
+-- d) Listar todas as UF´s que possuem um departamento
+
+SELECT DISTINCT* FROM DEPARTAMENTO AS A 
+INNER JOIN UF AS B
+ON A.uf_ufno=B.ufno
+
+--e) Listar todos os empregados por UF
+SELECT * FROM EMPREGADO as A
+INNER JOIN DEPARTAMENTO AS B
+ON A.deptono=B.deptono
+INNER JOIN UF
+ON B.uf_ufno= UF.ufno
+
+GROUP BY B.uf_ufno= UF.ufno
+
+
+--f) Listar os empregados que entraram na empresa a partir de 2014
+
+--g) Listar a média salarial por UF e Departamento
+SELECT MEAN 
+--h) Listar os 10 maiores salários, mostrando o nome do empregado, data da contratação e departamento.
