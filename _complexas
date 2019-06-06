@@ -1,0 +1,248 @@
+--Introdução ao SQL
+--Natalia Sales Mesquita
+--******************************Glossario********************************
+--1- Agrupamos todas as tabelas para relacionar as informações da tabela final desejada
+--2- Mesma coisa par 1 tirando o WHERE
+--3-
+--4-
+--5- Selecionamos as coluna da nova tabela que queremos construir, fizemos as ligações de PK com FR ,
+ --Tiramos os nulos e somamos as distribuidoras e agrupamos por regiao por que a qt de dist é uma variavel calculada
+--6-
+--7-
+--8-Somamos as Vendas e as distribuidoras, ligamos as Pk e as Fk e filtramos os estados de SP e RJ de dentro da região Sudeste
+SELECT * from venda_gasolina
+SELECT * FROM UF
+SELECT * FROM REGIAO
+---------------------Exercíco 1------------------
+--1. Liste o valor total por região no ano 2017. 
+
+--ORDEM DAS COLUNAS ANTES DO FROM
+SELECT  VG.ANO, 
+		REGIAO.NOME_REGIAO AS REGIAO, 
+		SUM(VG.VENDA_MIL_M3) AS VALOR_TOTAL
+FROM venda_gasolina AS VG
+JOIN UF
+ON VG.COD_UF=UF.COD_UF
+JOIN REGIAO
+ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+
+WHERE VG.ano=2017
+GROUP BY VG.ANO,
+		REGIAO.NOME_REGIAO
+
+--RESPOSTA PROFESSOR
+		
+SELECT VG.ANO,
+	   REG.NOME_REGIAO,
+    	SUM(VG.VENDA_MIL_M3) AS VENDA2017
+FROM VENDA_GASOLINA AS VG
+		JOIN UF 
+			ON VG.COD_UF = UF.COD_UF
+        JOIN REGIAO REG
+			ON UF.COD_REGIAO = REG.COD_REGIAO
+WHERE VG.ANO = 2017
+GROUP BY VG.ANO, 
+		REG.NOME_REGIAO
+
+---------------------Exercíco 2------------------
+--2. Liste o valor total por região e ano. 
+SELECT  VG.ANO, 
+		REGIAO.NOME_REGIAO AS REGIAO, 
+		SUM(VG.VENDA_MIL_M3) AS VALOR_TOTAL
+FROM venda_gasolina AS VG
+JOIN UF
+ON VG.COD_UF=UF.COD_UF
+JOIN REGIAO
+ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+
+
+GROUP BY VG.ANO,
+		REGIAO.NOME_REGIAO
+
+ORDER BY VG.ANO
+
+---------------------Exercíco 3------------------
+--3. Calcule a taxa de crescimento entre os anos para as regiões. (exercício desafio)
+---------------------Exercíco 4------------------
+--4. Qual a uf(ESTADO) com maior representatividade por região e ano.
+SELECT SUM()AS REPRESENTATIVIDADE
+	   UF.NOME_UF,
+	   VG.ANO
+FROM venda_gasolina AS VG
+JOIN UF
+ON VG.COD_UF=UF.COD_UF
+GROUP BY UF.NOME_UF,
+	     VG.ANO 
+--INCOMPLETO 
+
+
+
+---------------------Exercíco 5------------------
+--5. Qual a quantidade de distribuidoras por Região.
+SELECT SUM(VG.qtd_distribuidoras) AS Distribuidoras, 
+	   REGIAO.nome_regiao AS REGIAO
+FROM VENDA_GASOLINA AS VG
+
+JOIN UF
+ON VG.COD_UF=UF.COD_UF
+JOIN REGIAO
+ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+WHERE VG.qtd_distribuidoras IS NOT NULL
+GROUP BY REGIAO.nome_regiao
+
+
+---------------------Exercíco 6------------------
+--6. Qual a representatividade entre quantidade e venda por ano.
+---------------------Exercíco 7------------------
+--7. Selecione apenas a região Sudeste e os estados: São Paulo e Rio de 
+--Janeiro, apresente seus valores de venda, e demonstre todos de forma agrupada todos os outros valores da região solicitada.
+SELECT  UF.nome_uf AS ESTADO,
+		SUM(VG.VENDA_MIL_M3) AS VENDAS
+FROM VENDA_GASOLINA AS VG
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+WHERE REGIAO.nome_regiao = 'Sudeste'
+		AND UF.nome_UF IN ('São Paulo','Rio de Janeiro')
+
+GROUP BY UF.nome_uf
+UNION
+SELECT  REGIAO.NOME_regiao AS REGIAO,
+		SUM(VG.VENDA_MIL_M3) AS VENDAS
+FROM VENDA_GASOLINA AS VG
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+WHERE REGIAO.nome_regiao = 'Sudeste'
+		AND UF.nome_UF NOT IN ('São Paulo','Rio de Janeiro')
+
+GROUP BY REGIAO.NOME_regiao
+---------------------Exercíco 8------------------
+--8. Liste todas as regiões e UF, filtre as UF: São Paulo e Rio de Janeiro, traga os valores QTD_DISTRIBUIDORAS e TOT_VENDAS, sumarizados.
+
+SELECT SUM(VG.qtd_distribuidoras) AS Distribuidoras, 
+	   UF.nome_uf AS ESTADO,
+	   SUM(VG.VENDA_MIL_M3) AS TOTAL_DE_VENDAS
+FROM VENDA_GASOLINA AS VG
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+WHERE VG.qtd_distribuidoras IS NOT NULL
+		AND REGIAO.nome_regiao = 'Sudeste'
+		AND UF.nome_UF IN ('São Paulo','Rio de Janeiro')
+GROUP BY UF.nome_uf
+
+---------------------Exercíco 9------------------
+--9. Selecione todos os valores e substitua os valores nulos por zero
+SELECT regiao.nome_regiao, 
+		UF.nome_uf,  
+		ISNULL(vg.qtd_distribuidoras, 0) as DISTRIBUIDORAS, 
+		vg.venda_mil_m3, 
+		vg.ano
+FROM venda_gasolina AS VG
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+GROUP BY regiao.nome_regiao, UF.nome_uf, qtd_distribuidoras, venda_mil_m3, ano
+
+---------------------Exercíco 1,------------------
+--10. Liste o valor por ano de qtd_distribuidoras e venda
+SELECT  vg.ano,	
+		SUM(ISNULL(VG.qtd_distribuidoras,0)) AS qtd_distribuidoras,
+		SUM(vg.venda_mil_m3) AS vendas
+FROM venda_gasolina AS vg
+GROUP BY vg.ano
+---------------------Exercíco 11------------------
+--11. Use uma taxa fixa de 20% para venda e 12% para qtd_distribuidoras usando os valores médios dos anos anteriores e faça a previsão para 2018
+SELECT  2018 as 'Ano',	
+		avg(VG.qtd_distribuidoras)*1.12 AS qtd_distribuidoras,
+		avg(vg.venda_mil_m3) * 1.20 AS vendas_total
+
+FROM venda_gasolina AS vg
+
+---------------------Exercíco 12------------------
+--12. Faça o mesmo cálculo apenas para os dois últimos anos, use uma taxa fixa de 20% para venda e 12% para qtd_distribuidoras, use os valores médios
+--dos anos anteriores e faça a previsão para 2018
+SELECT  2018 as 'Ano',	
+		avg(VG.qtd_distribuidoras)*1.12 AS qtd_distribuidoras,
+		avg(vg.venda_mil_m3) * 1.20 AS vendas_total
+
+FROM venda_gasolina AS vg
+WHERE ano IN ('2016','2017')
+
+---------------------Exercíco 13------------------
+--13. Repita o exercício 12, apenas para o último ano, agrupando os valores por região substitua o nome da região pela sigla da região.
+
+SELECT  2018 as 'Ano',	
+		avg(VG.qtd_distribuidoras)*1.12 AS DISTRIBUIDORAS,
+		avg(vg.venda_mil_m3) * 1.20 AS VENDAS,
+		regiao.nome_regiao AS REGIAO,
+CASE 
+	 WHEN regiao.nome_regiao= 'CENTRO-OESTE' THEN 'CO'
+	 WHEN regiao.nome_regiao= 'SUDESTE' THEN 'SD'
+	 WHEN regiao.nome_regiao= 'NORDESTE' THEN 'ND'
+	 WHEN regiao.nome_regiao= 'NORTE' THEN 'NO'
+	 WHEN regiao.nome_regiao= 'SUL' THEN 'SU' 
+	 END 
+	 AS SIGLAS
+	
+FROM venda_gasolina AS vg
+	JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+WHERE ano IN ('2016','2017')
+
+GROUP BY regiao.nome_regiao
+
+
+
+---------------------Exercíco 14------------------
+--14. Selecione a UF e ano, apresente as medias de valor venda , com médias superiores a 400.00, classificando ordem decrescente
+SELECT 
+		UF.nome_uf,  
+		vg.ano,
+		avg(vg.venda_mil_m3) AS VENDAS
+FROM venda_gasolina AS VG
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+
+GROUP BY UF.nome_uf, vg.ano
+HAVING avg(vg.venda_mil_m3)>400
+ORDER BY avg(vg.venda_mil_m3) DESC;
+
+
+---------------------Exercíco 15------------------
+--15. Repita o exercício 15 trazendo a média do último ano e médias acima de 600.00
+SELECT 
+		UF.nome_uf,  
+		vg.ano,
+		avg(vg.venda_mil_m3) AS VENDAS
+FROM venda_gasolina AS VG
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+WHERE ano IN ('2017')
+
+GROUP BY UF.nome_uf, vg.ano
+HAVING avg(vg.venda_mil_m3)>600
+ORDER BY avg(vg.venda_mil_m3) DESC;
+---------------------Exercíco 16------------------
+--16. Faça a previsão média por região para os próximos 5 anos, utilize a taxa fixa de 20% ao ano para a venda. (exercício desafio)
+SELECT  2018 as 'Ano',	
+		avg(vg.venda_mil_m3) * POWER(1.20,5 ) AS VENDAS,
+		regiao.nome_regiao AS REGIAO
+FROM venda_gasolina AS vg
+		JOIN UF
+		ON VG.COD_UF=UF.COD_UF
+		JOIN REGIAO
+		ON UF.COD_REGIAO = REGIAO.COD_REGIAO
+
+GROUP BY regiao.nome_regiao
