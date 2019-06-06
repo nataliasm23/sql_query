@@ -31,8 +31,4 @@ ON B.uf_ufno= UF.ufno
 GROUP BY B.uf_ufno= UF.ufno
 
 
---f) Listar os empregados que entraram na empresa a partir de 2014
 
---g) Listar a média salarial por UF e Departamento
-SELECT MEAN 
---h) Listar os 10 maiores salários, mostrando o nome do empregado, data da contratação e departamento.
